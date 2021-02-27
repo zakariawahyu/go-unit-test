@@ -59,6 +59,26 @@ Before and After Test
 - Fitur ini bernama main, dimana digunakan untuk mengatur eksekusi unit test, namun hal ini juga bisa kita gunakan untuk melakukan Before dan After unit test
  */
 
+/**
+Sub Test
+- Golang mendukung fitur pembuatan function unit test di dalam function unit test
+- Fitur ini memang sedikit aneh dan jarang sekali dimiliki di unit test di bahasa pemograman lainnya
+- Utuk membuat unit test kita bisa memanfaatkan function Run() di struct T
+
+Menjalanjan hanya Sub Test saja
+- Kita sudah tahu jika ingin menjalankan sebuah unit test function, kita bisa menggunakan perintah: go test -run TestNamaFunction
+- Jika kita ingin menjalankan hanya salah satu sub test, kita bisa menggunakan perintah" go test -run TestNamaFunction/NamaSubTest
+- Atau untuk semua test semua sub test di test di semua function, kita bisa menggunakan perintah: go test -run /NamaSubTest
+ */
+
+/**
+Table test
+- Jika diperhatikan, sebenarnya dengan sub test kita bisa membuat test secara dinamis
+- Dan fitur sub test ini biasa digunakan programmer golang untuk membuat test dengan konsep table test
+- Table test yaitu dimana kita menyediakan data berupa slice yang berisi parameter, request dan ekspektasi hasil dari unit test
+- Lalu slice tersebut kita literasi menggunakan sub test
+ */
+
 // ketika fail maka akan tetap lanjut tapi diakhir dianggap gagal
 func TestHelloZakaria(t *testing.T) {
 	result := HelloWorld("Zakaria")
@@ -169,6 +189,49 @@ func TestMain(m *testing.M)  {
 	// After unit test
 	// Setelah semua function berhasil dieksekusi maka kode program setelah Run() akan jalan
 	fmt.Println("AFTER UNIT TEST")
+}
+
+func TestSubTest(t *testing.T)  {
+	t.Run("Zakaria", func(t *testing.T) {
+		result := HelloWorld("Zakaria")
+		assert.Equal(t, "Hello Zakaria", result, "Result must be Hello Zakaria")
+	})
+
+	t.Run("Wahyu", func(t *testing.T) {
+		result := HelloWorld("Wahyu")
+		assert.Equal(t, "Hello Wahyu", result, "Result must be Hello Wahyu")
+	})
+}
+
+func TestTableHelloWorld(t *testing.T)  {
+	data := []struct{
+		Nama string
+		Request string
+		Ecpected string
+	}{
+		{
+			"Zakaria",
+			"Zakaria",
+			"Hello Zakaria",
+		},
+		{
+			"Wahyu",
+			"Wahyu",
+			"Hello Wahyu",
+		},
+		{
+			"Nur",
+			"Nur",
+			"Hello Nur",
+		},
+	}
+
+	for _, field := range data{
+		t.Run(field.Nama, func(t *testing.T) {
+			result := HelloWorld(field.Request)
+			assert.Equal(t, field.Ecpected, result )
+		})
+	}
 }
 
 
