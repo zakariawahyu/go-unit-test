@@ -51,6 +51,14 @@ Skip Test
 - Untuk membatalkan atau skip unit test bisa menggunakan fucntion Skip()
  */
 
+/**
+Before and After Test
+- Biasanya dalam unit test kadang kita ingin melakukan sesuatu sebelum dan setelah sebuah unit test dieksekusi
+- Jikalau kode yang kita lakukan sebelum dan setelah selalu sama antar unit test di setiap funtionnya, maka membuat manual di unit test funtionnya adalah hal yang membosankan dan terlalu banyak kode duplikat jadinya
+- Di golang semua itu bisa dihandle dengan fitur yang bernama testing.M
+- Fitur ini bernama main, dimana digunakan untuk mengatur eksekusi unit test, namun hal ini juga bisa kita gunakan untuk melakukan Before dan After unit test
+ */
+
 // ketika fail maka akan tetap lanjut tapi diakhir dianggap gagal
 func TestHelloZakaria(t *testing.T) {
 	result := HelloWorld("Zakaria")
@@ -114,8 +122,8 @@ func TestHelloWorld(t *testing.T) {
 
 // sengaja di errorkan dan menggunakan panic
 // tidak disarankan menggagalkan error dengan panic
-func TestHelloWorlZakaria(t *testing.T) {
-	result := HelloWorld("Zakaria")
+func TestHelloWorldZakaria(t *testing.T) {
+	result := HelloWorld("Error")
 
 	if result != "Hello Error" {
 		// untuk memunculkan error
@@ -148,6 +156,19 @@ func TestHelloWorldSkip(t *testing.T)  {
 	result := HelloWorld("Zakaria")
 	require.Equal(t, "Hello Zakaria Cek...", result, "Results must be 'Hello Zakaria Cek...'")
 	fmt.Println("Test selesai")
+}
+
+func TestMain(m *testing.M)  {
+	// Before unit test
+	// Akan dieksekusi sebelum semua unit test dieksekusi pada package ini
+	fmt.Println("BEFORE UNIT TEST")
+
+	// Akan mengeksekui semua function unit test pada package ini
+	m.Run()
+
+	// After unit test
+	// Setelah semua function berhasil dieksekusi maka kode program setelah Run() akan jalan
+	fmt.Println("AFTER UNIT TEST")
 }
 
 
