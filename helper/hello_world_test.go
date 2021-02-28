@@ -79,6 +79,44 @@ Table test
 - Lalu slice tersebut kita literasi menggunakan sub test
  */
 
+/**
+Benchmark
+- Selain unit test, golang testing package juga mendukung untuk melakukan benchmark
+- Benchmark adalah mekanisme menghitung kecepatan performa kode aplikasi kita
+- Benchmark di golang dilakukan dengan cara otomatis melakukan iterasi kode yang kita panggil berkali-kali sampai waktu tertentu
+- Kita tidak perlu menentukan jumlah iterasi dan lamanya benchmark, karena itu sudah diatur oleh testing.B bawaan dari package testing
+
+testing.B
+- testing.B adalah struct yang digunakan untuk melakukan benchamrk
+- testing.B mirip dengan testing.T, terdapat function Fail(), FailNow(), Fatal() dll
+- yang memberdakan ada beberapa attribute dan function tambahan yan gdigunakan untuk melakukan benchmark
+- salah satuny adalah attribute N, ini digunakan untuk melakukan total iterasi sebuah benchmark
+
+Cara Kerja Benhmark
+- Cara kerja benchmark di golang sederhana, hanya perlu membuat perulangan sejumlah N attribute
+- Nanti secara otomatis lalu mendeteksi beberapa lama proses tersebut berjalan dan disimpulkan performa benchmark nya dalam waktu
+
+Membuat Benchmark
+Benchmark Function
+- Mirip seperti unit test, untuk benchmark pun di golang sudah ditentukan nama functionnya. harus diawali dengan kata Benchmark, misal BenchmarkHelloWorld, Bencmarkxxx
+- Selain itu harus memiliki parameter (b *testing.B)
+- Tidak boleh mengembalikan return value
+- Untuk nama file benchmark sama seperti unit test, diakhiri dengan _test misal helllo_world_test
+
+Menjalankan Benchmark
+- Untuk menjalankan seluruh benchmark di seluruh modul tapi unit test juga berjalan, kita bisa menggunakan perintah sama seperti unit test namun ditambahkan parameter bench. contoh : go test -v -bench=.
+- Jika ktia ingin menjalankan semua benchmark tanpa unit test, kita bisa gunakan perintah : go test -v -run=NoMatchUnitTest -bench=.
+- Jika ktia ingin menjalankan salah satu benchmark dan tanpa unit test, kita bisa gunakan go test -v -run=NotMatchTest -bench=NamaBenchmarkTest
+- Jika kita ingin menjalankan benchmark di root module atau semuanya, kita bisa gunakan perintah go test -v -bench=. ./...
+
+Sub Benchmark
+- Sama seperti testing.T, di testing.B kita juga bisa membuat sub benchmark menggunakan function run()
+
+Menjalankan hanya sub benchmark
+- Saat kita menjalankan benchmark function, maka semua sub benchmark akan berjalan
+- Namun kita ingin menjalankan salah satu sub benchmark saja, kita bisa gunakan perintah : go test -v -bench=NamaBenchamrk/NamaSubBenchamrk
+ */
+
 // ketika fail maka akan tetap lanjut tapi diakhir dianggap gagal
 func TestHelloZakaria(t *testing.T) {
 	result := HelloWorld("Zakaria")
@@ -230,6 +268,56 @@ func TestTableHelloWorld(t *testing.T)  {
 		t.Run(field.Nama, func(t *testing.T) {
 			result := HelloWorld(field.Request)
 			assert.Equal(t, field.Ecpected, result )
+		})
+	}
+}
+
+func BenchmarkHelloWorldZakaria(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		HelloWorld("Zakaria")
+	}
+}
+
+func BenchmarkHelloWorldWahyu(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		HelloWorld("Wahyu")
+	}
+}
+
+func BenchmarkHelloWorldSubBenchmark(b *testing.B) {
+	b.Run("Nur", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			HelloWorld("Nur")
+		}
+	})
+
+	b.Run("Utomo", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			HelloWorld("Utomo")
+		}
+	})
+}
+
+func BenchmarkHelloWorldTableBenchmark(b *testing.B) {
+	benchmarks := []struct{
+		name string
+		request string
+	}{
+		{
+			"Nur",
+			"Hello Nur",
+		},
+		{
+			"Utomo",
+			"Hello Utomo",
+		},
+	}
+
+	for _, benchmark := range benchmarks{
+		b.Run(benchmark.name, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				HelloWorld(benchmark.request)
+			}
 		})
 	}
 }
